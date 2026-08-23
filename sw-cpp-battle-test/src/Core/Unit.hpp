@@ -21,7 +21,7 @@ namespace sw::core
          * Tries all registered actions in order and executes the first one that succeeds.
          * Returns true if an action was executed, false otherwise.
          */
-        bool Act(World& world)
+        bool act(World& world)
         {
             for (auto& action : _actions)
             {
@@ -31,13 +31,17 @@ namespace sw::core
             return false;
         }
 
+        template <typename ParamType>
+        auto getParam() const
+        {
+            return _params.get<ParamType>();
+        }
+
     private:
         const uint32_t _id{ 0 };
-        uint32_t _x{ 0 };
-        uint32_t _y{ 0 };
 
         // Health, Strength, Speed, etc.
-        TypeRegistry _components;
+        TypeRegistry _params;
         
         // A list of actions in a specific order. The first action that succeeds will be executed.
         std::vector<std::unique_ptr<IAction>> _actions;
