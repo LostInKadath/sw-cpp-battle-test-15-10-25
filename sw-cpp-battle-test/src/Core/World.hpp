@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <unordered_map>
 
+#include <Core/ISimulationObserver.hpp>
 #include <Core/Point.hpp>
 #include <Core/Properties.hpp>
 #include <Core/Unit.hpp>
@@ -14,9 +15,10 @@ namespace sw::core
     {
         using UnitId = uint32_t;
 
-        World(uint32_t width, uint32_t height)
-            : _width{ width }, _height{ height }
+        World(uint32_t width, uint32_t height, const ISimulationObserver& observer)
+            : _width{ width }, _height{ height }, _observer{ observer }
         {
+            _observer.onMapCreated(_currentTick, _width, _height);
         }
 
         void spawnUnit(std::unique_ptr<Unit>&& unit, const Point& position)
@@ -33,6 +35,8 @@ namespace sw::core
 
             _units.emplace(id, std::move(unit));
             _positions.emplace(id, position);
+
+            _observer.onUnitSpawned(_currentTick, id, "Swordsman", position);
         }
 
         std::unique_ptr<Unit>& getUnit(UnitId id)
@@ -79,7 +83,26 @@ namespace sw::core
 
         void moveUnit(const Unit& unit, const Point& position)
         {
-            _positions.at(unit.getId()) = position;
+            const auto id = unit.getId();
+            _positions.at(id) = position;
+            _observer.onUnitMoved(_currentTick, id, position);
+        }
+
+    public: // Wrappers to inject _currentTick
+        void onMarchStarted(uint32_t unitId, const Point& to)
+        {
+            const auto from =_positions.at(unitId);
+            _observer.onMarchStarted(_currentTick, unitId, from, to);
+        }
+
+        void onMarchEnded(uint32_t unitId, const Point& where)
+        {
+            _observer.onMarchEnded(_currentTick, unitId, where);
+        }
+
+        void onUnitMoved(uint32_t unitId, const Point& where)
+        {
+            _observer.onUnitMoved(_currentTick, unitId, where);
         }
 
     private:
@@ -94,8 +117,11 @@ namespace sw::core
     private:
         const uint32_t _width{ 0 };
         const uint32_t _height{ 0 };
+        const ISimulationObserver& _observer;
 
         std::unordered_map<UnitId, std::unique_ptr<Unit>> _units;
         std::unordered_map<UnitId, Point> _positions;
+
+        uint32_t _currentTick{ 0 };
     };
 }

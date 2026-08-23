@@ -16,6 +16,7 @@
 #include <IO/System/PrintDebug.hpp>
 
 #include <Core/Simulation.hpp>
+#include <Core/SimulationObserver.hpp>
 
 #include <Features/Units/Swordsman.hpp>
 
@@ -37,26 +38,24 @@ int main(int argc, char** argv)
 	EventLog eventLog;
 	io::CommandParser parser;
 
-	sw::core::Simulation simulation;
+	sw::simulation::SimulationObserver observer(eventLog);
+
+	sw::core::Simulation simulation(observer);
 
 	parser.add<io::CreateMap>([&](auto command) {
 		simulation.createMap(command.width, command.height);
-		eventLog.log(0, io::MapCreated{command.width, command.height});
 	});
 
 	parser.add<io::SpawnSwordsman>([&](auto command) {
 		simulation.spawnSwordsman(command.unitId, command.x, command.y, command.hp, command.strength);
-		eventLog.log(0, io::UnitSpawned{command.unitId, "Swordsman", command.x, command.y});
 	});
 
 	parser.add<io::SpawnHunter>([&](auto command) {
 		simulation.spawnHunter(command.unitId, command.x, command.y, command.hp, command.agility, command.strength, command.range);
-		eventLog.log(0, io::UnitSpawned{command.unitId, "Hunter", command.x, command.y});
 	});
 
 	parser.add<io::March>([&](auto command) {
 		simulation.marchUnit(command.unitId, command.targetX, command.targetY);
-		eventLog.log(1, io::MarchStarted{1, 0, 0, command.targetX, command.targetY});
 	});
 
 	parser.parse(file);
