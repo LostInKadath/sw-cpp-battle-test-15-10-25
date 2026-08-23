@@ -21,7 +21,7 @@ namespace sw::core
             _observer.onMapCreated(_currentTick, _width, _height);
         }
 
-        void spawnUnit(std::unique_ptr<Unit>&& unit, const Point& position)
+        void spawnUnit(std::unique_ptr<Unit>&& unit, std::string_view type, const Point& position)
         {
             if (!unit)
                 throw std::runtime_error("No unit provided!");
@@ -36,7 +36,7 @@ namespace sw::core
             _units.emplace(id, std::move(unit));
             _positions.emplace(id, position);
 
-            _observer.onUnitSpawned(_currentTick, id, "Swordsman", position);
+            _observer.onUnitSpawned(_currentTick, id, type, position);
         }
 
         std::unique_ptr<Unit>& getUnit(UnitId id)
@@ -88,21 +88,17 @@ namespace sw::core
             _observer.onUnitMoved(_currentTick, id, position);
         }
 
+        void completeMarch(Unit& unit)
+        {
+            unit.removeProperty<properties::March>();
+            _observer.onMarchEnded(_currentTick, unit.getId(), _positions.at(unit.getId()));
+        }
+
     public: // Wrappers to inject _currentTick
-        void onMarchStarted(uint32_t unitId, const Point& to)
+        void startMarch(uint32_t unitId, const Point& to)
         {
             const auto from =_positions.at(unitId);
             _observer.onMarchStarted(_currentTick, unitId, from, to);
-        }
-
-        void onMarchEnded(uint32_t unitId, const Point& where)
-        {
-            _observer.onMarchEnded(_currentTick, unitId, where);
-        }
-
-        void onUnitMoved(uint32_t unitId, const Point& where)
-        {
-            _observer.onUnitMoved(_currentTick, unitId, where);
         }
 
     private:

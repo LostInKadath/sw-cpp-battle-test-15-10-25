@@ -33,10 +33,7 @@ namespace sw::features::actions
             }
 
             if (position == march->target)
-            {
-                unit.removeProperty<sw::core::properties::March>();
-                // TODO: log about march ended
-            }
+                world.completeMarch(unit);
 
             return true;
         }

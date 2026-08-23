@@ -17,9 +17,9 @@ namespace sw::simulation
             _eventLog.log(tick, io::MapCreated{width, height});
         }
 
-        void onUnitSpawned(uint32_t tick, uint32_t id, const std::string& type, const sw::core::Point& where) const
+        void onUnitSpawned(uint32_t tick, uint32_t id, std::string_view type, const sw::core::Point& where) const
         {
-            _eventLog.log(tick, io::UnitSpawned{id, type, where.x, where.y});
+            _eventLog.log(tick, io::UnitSpawned{id, std::string{ type }, where.x, where.y});
         }
 
         void onUnitMoved(uint32_t tick, uint32_t id, const sw::core::Point& where) const
