@@ -25,10 +25,6 @@ namespace sw::features::units
             unit->setProperty<sw::features::units::parameters::Health>(health);
             unit->setProperty<sw::features::units::parameters::Strength>(strength);
 
-            // TODO: bad, as needs every NewAttackTypeVulnerable to be added for every existing unit type.
-            // Think about default property values for all units. Maybe property should be NotMeleeTargetable?
-            unit->setProperty<sw::features::units::properties::MeleeTargetable>();
-
             return unit;
         }
     };

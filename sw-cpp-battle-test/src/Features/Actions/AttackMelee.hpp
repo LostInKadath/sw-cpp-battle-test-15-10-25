@@ -14,18 +14,16 @@ namespace sw::features::actions
 
         bool tryAct(sw::core::Unit& unit, sw::core::World& world) override
         {
-            auto damageParam = unit.getParam<DamageType>();
+            const auto damageParam = unit.getProperty<DamageType>();
             if (!damageParam)
                 return false;
 
-            auto position = world.getPosition(unit);
+            const auto position = world.getPosition(unit);
 
-            auto targets = world.findUnits(
-                position,
-                MinRange,
-                MaxRange,
+            const auto targets = world.findUnits(position, MinRange, MaxRange,
                 [](const sw::core::Unit& target) {
-                    return target.getProperty<sw::features::units::properties::MeleeTargetable>();
+                    const auto immunities = target.getProperty<sw::features::units::Immunities>();
+                    return !immunities || !immunities->types.count(sw::features::units::AttackType::Melee);
                 });
             if (targets.empty())
                 return false;
