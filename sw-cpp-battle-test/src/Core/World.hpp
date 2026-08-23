@@ -25,7 +25,7 @@ namespace sw::core
                 throw std::runtime_error("No unit provided!");
 
             const auto id = unit->getId();
-            if (_units.count(id) > 0)
+            if (_units.contains(id))
                 throw std::runtime_error("Unit with id " + std::to_string(id) + " already exists!");
 
             if (isCellBlocked(position))
@@ -33,6 +33,11 @@ namespace sw::core
 
             _units.emplace(id, std::move(unit));
             _positions.emplace(id, position);
+        }
+
+        std::unique_ptr<Unit>& getUnit(UnitId id)
+        {
+            return _units.at(id);
         }
 
         Point getPosition(const Unit& unit) const
@@ -70,6 +75,11 @@ namespace sw::core
             }
 
             return targets;
+        }
+
+        void moveUnit(const Unit& unit, const Point& position)
+        {
+            _positions.at(unit.getId()) = position;
         }
 
     private:

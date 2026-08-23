@@ -15,7 +15,7 @@
 #include <IO/System/EventLog.hpp>
 #include <IO/System/PrintDebug.hpp>
 
-#include <Core/World.hpp>
+#include <Core/Simulation.hpp>
 
 #include <Features/Units/Swordsman.hpp>
 
@@ -28,40 +28,35 @@ int main(int argc, char** argv)
 	using namespace sw;
 
 	if (argc != 2)
-	{
 		throw std::runtime_error("Error: No file specified in command line argument");
-	}
 
 	std::ifstream file(argv[1]);
 	if (!file)
-	{
 		throw std::runtime_error("Error: File not found - " + std::string(argv[1]));
-	}
 	
 	EventLog eventLog;
 	io::CommandParser parser;
 
-	std::optional<core::World> world;
+	sw::core::Simulation simulation;
 
 	parser.add<io::CreateMap>([&](auto command) {
-		world.emplace(command.width, command.height);
+		simulation.createMap(command.width, command.height);
 		eventLog.log(0, io::MapCreated{command.width, command.height});
 	});
 
 	parser.add<io::SpawnSwordsman>([&](auto command) {
-		auto unit = features::units::Swordsman::create(command.unitId, command.hp, command.strength);
-		world->spawnUnit(std::move(unit), {command.x, command.y});
+		simulation.spawnSwordsman(command.unitId, command.x, command.y, command.hp, command.strength);
 		eventLog.log(0, io::UnitSpawned{command.unitId, "Swordsman", command.x, command.y});
 	});
+
 	parser.add<io::SpawnHunter>([&](auto command) {
-	//	auto unit = features::units::Hunter::create(command.unitId, command.hp, command.strength);
-	//	world->spawnUnit(std::move(unit), {command.x, command.y});
+		simulation.spawnHunter(command.unitId, command.x, command.y, command.hp, command.agility, command.strength, command.range);
 		eventLog.log(0, io::UnitSpawned{command.unitId, "Hunter", command.x, command.y});
 	});
-	parser.add<io::March>([&](auto command) {
 
-		eventLog.log(1, io::MarchStarted{1, 0, 0, 9, 0});
-		printDebug(std::cout, command);
+	parser.add<io::March>([&](auto command) {
+		simulation.marchUnit(command.unitId, command.targetX, command.targetY);
+		eventLog.log(1, io::MarchStarted{1, 0, 0, command.targetX, command.targetY});
 	});
 
 	parser.parse(file);

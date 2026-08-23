@@ -41,6 +41,12 @@ namespace sw::core
             return _properties.get<PropertyType>();
         }
 
+        template <typename PropertyType>
+        void removeProperty()
+        {
+            _properties.remove<PropertyType>();
+        }
+
     public: // Game mechanics
 
         /** Makes a move for a unit.

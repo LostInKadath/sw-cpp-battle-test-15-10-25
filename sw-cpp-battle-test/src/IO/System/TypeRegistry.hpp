@@ -76,5 +76,21 @@ namespace sw
 			}
 			return nullptr;
 		}
+
+		/// @brief Removes existing instance by type
+		/// @code
+		/// registry.remove<Position>();  	  // By concrete type
+		/// registry.remove<Dog, IAnimal>();  // By interfaces
+		/// @endcode
+		template <typename T, typename... Interfaces>
+		void remove()
+		{
+			static_assert((std::is_base_of_v<Interfaces, T> && ...), "T must inherit from all specified interfaces");
+
+			_instances.erase(std::type_index(typeid(T)));
+			(_instances.erase(std::type_index(typeid(Interfaces))), ...);
+		}
+
+		// TODO: add() adds one instance to several keys. remove(instance) should consider this.
 	};
 }
