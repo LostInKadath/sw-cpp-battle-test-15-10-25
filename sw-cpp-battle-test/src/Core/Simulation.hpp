@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include <Core/World.hpp>
-
+#include <Features/Units/Hunter.hpp>
 #include <Features/Units/Swordsman.hpp>
 
 namespace sw::core
@@ -24,8 +24,8 @@ namespace sw::core
 
         void spawnHunter(uint32_t unitId, uint32_t x, uint32_t y, uint32_t health, uint32_t agility, uint32_t strength, uint32_t range)
         {
-        //    auto unit = features::units::Hunter::create(unitId, health, agility, strength, range);
-		//    _world->spawnUnit(std::move(unit), {x, y});
+            auto unit = features::units::Hunter::create(unitId, health, agility, strength, range);
+		    _world->spawnUnit(std::move(unit), {x, y});
         }
 
         void marchUnit(uint32_t unitId, uint32_t targetX, uint32_t targetY)

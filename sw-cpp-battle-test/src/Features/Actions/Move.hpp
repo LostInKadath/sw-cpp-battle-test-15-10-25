@@ -11,15 +11,15 @@ namespace sw::features::actions
     {
         bool tryAct(sw::core::Unit& unit, sw::core::World& world) override
         {
-            const auto march = unit.getProperty<sw::core::March>();
+            const auto march = unit.getProperty<sw::core::properties::March>();
             if (!march)
                 return false;
 
             auto position = world.getPosition(unit);
 
-            for (auto step = 1; step < Speed && position != order->target; ++step)
+            for (auto step = 1; step < Speed && position != march->target; ++step)
             {
-                auto nextPoint = makeStep(position, order->target);
+                auto nextPoint = makeStep(position, march->target);
                 if (world.isCellBlocked(nextPoint))
                 {
                     // According to the task, no obstacles should be considered now.
@@ -27,14 +27,14 @@ namespace sw::features::actions
                     break;
                 }
                 
-                world.moveUnit(unit, next);
+                world.moveUnit(unit, nextPoint);
                 position = nextPoint;
                 // TODO: log about movement
             }
 
-            if (position == order->target)
+            if (position == march->target)
             {
-                unit.removeProperty<sw::core::March>();
+                unit.removeProperty<sw::core::properties::March>();
                 // TODO: log about march ended
             }
 

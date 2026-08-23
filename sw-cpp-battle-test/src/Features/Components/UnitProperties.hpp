@@ -7,6 +7,7 @@ namespace sw::features::units
     {
         struct Health{ int value{ 0 }; };
         struct Strength{ int value{ 0 }; };
+        struct Agility{ int value{ 0 }; };
     }
 
     enum class AttackType
