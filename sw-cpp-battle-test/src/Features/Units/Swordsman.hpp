@@ -9,7 +9,7 @@
 
 namespace sw::features::units
 {
-    struct Swordman
+    struct Swordsman
     {
         constexpr static const char Name[] = "Swordsman";
 

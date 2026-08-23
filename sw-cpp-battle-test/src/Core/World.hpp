@@ -4,8 +4,9 @@
 #include <type_traits>
 #include <unordered_map>
 
-#include "Core/Point.hpp"
-#include "Core/Unit.hpp"
+#include <Core/Point.hpp>
+#include <Core/Properties.hpp>
+#include <Core/Unit.hpp>
 
 namespace sw::core
 {
@@ -18,16 +19,43 @@ namespace sw::core
         {
         }
 
+        void spawnUnit(std::unique_ptr<Unit>&& unit, const Point& position)
+        {
+            if (!unit)
+                throw std::runtime_error("No unit provided!");
+
+            const auto id = unit->getId();
+            if (_units.count(id) > 0)
+                throw std::runtime_error("Unit with id " + std::to_string(id) + " already exists!");
+
+            if (isCellBlocked(position))
+                throw std::runtime_error("Position " + std::to_string(position.x) + ", " + std::to_string(position.y) + " is already occupied!");
+
+            _units.emplace(id, std::move(unit));
+            _positions.emplace(id, position);
+        }
+
         Point getPosition(const Unit& unit) const
         {
             return _positions.at(unit.getId());
+        }
+
+        bool isCellBlocked(const Point& position) const
+        {
+            constexpr const auto MinRange = 0;
+            constexpr const auto MaxRange = 0;
+
+            auto conflictingUnits = findUnits(position, MinRange, MaxRange, [](const Unit& unit) {
+                return !unit.getProperty<properties::NotOccupies>();
+            });
+            return !conflictingUnits.empty();
         }
 
         std::vector<Unit*> findUnits(
             const Point& position,
             size_t minRange,
             size_t maxRange,
-            std::function<bool(const Unit&)> filter) const
+            const std::function<bool(const Unit&)>& filter) const
         {
             std::vector<Unit*> targets;
 

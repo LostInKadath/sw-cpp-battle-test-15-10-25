@@ -15,28 +15,15 @@ namespace sw::core
         {
         }
 
+        virtual ~Unit() = default;
+
+    public: // Utility methods
+
         uint32_t getId() const
         {
             return _id;
         }
 
-        virtual ~Unit() = default;
-
-        /** Makes a move for a unit.
-         * Tries all registered actions in order and executes the first one that succeeds.
-         * Returns true if an action was executed, false otherwise.
-         */
-        bool act(World& world)
-        {
-            for (auto& action : _actions)
-            {
-                if (action->tryAct(*this, world))
-                    return true;
-            }
-            return false;
-        }
-
-        // TODO: refactor this, try to avoid two implementations
         template <typename PropertyType, typename PropertyValueType>
         void setProperty(PropertyValueType param)
         {
@@ -52,6 +39,22 @@ namespace sw::core
         auto getProperty() const
         {
             return _properties.get<PropertyType>();
+        }
+
+    public: // Game mechanics
+
+        /** Makes a move for a unit.
+         * Tries all registered actions in order and executes the first one that succeeds.
+         * Returns true if an action was executed, false otherwise.
+         */
+        bool tryAct(World& world)
+        {
+            for (auto& action : _actions)
+            {
+                if (action->tryAct(*this, world))
+                    return true;
+            }
+            return false;
         }
 
     private:

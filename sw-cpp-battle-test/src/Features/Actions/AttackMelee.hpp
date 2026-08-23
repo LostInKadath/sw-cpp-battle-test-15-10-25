@@ -20,18 +20,33 @@ namespace sw::features::actions
 
             const auto position = world.getPosition(unit);
 
-            const auto targets = world.findUnits(position, MinRange, MaxRange,
-                [](const sw::core::Unit& target) {
-                    const auto immunities = target.getProperty<sw::features::units::Immunities>();
-                    return !immunities || !immunities->types.count(sw::features::units::AttackType::Melee);
-                });
+            const auto targets = world.findUnits(position, MinRange, MaxRange, IsTargetSuitable);
             if (targets.empty())
                 return false;
 
             auto& target = *targets[0];           // TODO: get random target
-            target.applyDamage(*damageParam);
+
+            if (auto targetHealth = target.getProperty<units::parameters::Health>())
+                targetHealth->value = std::max(0, targetHealth->value - damageParam->value);
 
             // Who will log the event? The world?
+            return true;
+        }
+
+        static bool IsTargetSuitable(const sw::core::Unit& target)
+        {
+            // Only targets with Health can be attacked.
+            const auto health = target.getProperty<sw::features::units::parameters::Health>();
+            if (!health || health->value <= 0)
+                return false;
+
+            // Only targets that are not immune to Melee can be attacked.
+            if (const auto immunities = target.getProperty<sw::features::units::Immunities>())
+            {
+                if (immunities->types.count(sw::features::units::AttackType::Melee))
+                    return false;
+            }
+            
             return true;
         }
     };
