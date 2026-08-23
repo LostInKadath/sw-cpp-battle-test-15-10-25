@@ -18,6 +18,11 @@ namespace sw::core
         {
         }
 
+        Point getPosition(const Unit& unit) const
+        {
+            return _positions.at(unit.getId());
+        }
+
         std::vector<Unit*> findUnits(
             const Point& position,
             size_t minRange,
@@ -31,7 +36,7 @@ namespace sw::core
             {
                 const auto& unitPosition = _positions.at(id);
                 const auto distance = getDistance(unitPosition, position);
-                
+
                 if (minRange <= distance && distance <= maxRange && filter(*unit))
                     targets.push_back(unit.get());
             }
@@ -40,12 +45,12 @@ namespace sw::core
         }
 
     private:
-        // TODO: think about types for coordinates and distances. Now the function is quite ugly. Maybe we need extra types?
-        static auto getDistance(const Point& a, const Point& b) -> std::make_signed_t<Point::CoordType>
+        // Chebyshev distance -- supports diagonal distance.
+        static auto getDistance(const Point& a, const Point& b) -> Point::CoordType
         {
-            using SignedCoordinate = std::make_signed_t<Point::CoordType>;
-            return std::abs(static_cast<SignedCoordinate>(a.x) - static_cast<SignedCoordinate>(b.x)) +
-                   std::abs(static_cast<SignedCoordinate>(a.y) - static_cast<SignedCoordinate>(b.y));
+            const auto dx = a.x > b.x ? a.x - b.x : b.x - a.x;
+            const auto dy = a.y > b.y ? a.y - b.y : b.y - a.y;
+            return std::max(dx, dy);
         }
 
     private:

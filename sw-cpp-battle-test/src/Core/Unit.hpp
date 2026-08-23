@@ -15,6 +15,11 @@ namespace sw::core
         {
         }
 
+        uint32_t getId() const
+        {
+            return _id;
+        }
+
         virtual ~Unit() = default;
 
         /** Makes a move for a unit.
@@ -31,17 +36,30 @@ namespace sw::core
             return false;
         }
 
-        template <typename ParamType>
-        auto getParam() const
+        // TODO: refactor this, try to avoid two implementations
+        template <typename PropertyType, typename PropertyValueType>
+        void setProperty(PropertyValueType param)
         {
-            return _params.get<ParamType>();
+            _properties.emplace<PropertyType>(std::move(param));
+        }
+        template <typename PropertyType>
+        void setProperty()
+        {
+            _properties.emplace<PropertyType>();
+        }
+
+        template <typename PropertyType>
+        auto getProperty() const
+        {
+            return _properties.get<PropertyType>();
         }
 
     private:
         const uint32_t _id{ 0 };
 
-        // Health, Strength, Speed, etc.
-        TypeRegistry _params;
+        // Unit parameters -- Health, Strength, Speed, etc.
+        // Also unit properties -- MeleeTargetable, RangedTargetable, etc.
+        TypeRegistry _properties;
         
         // A list of actions in a specific order. The first action that succeeds will be executed.
         std::vector<std::unique_ptr<IAction>> _actions;

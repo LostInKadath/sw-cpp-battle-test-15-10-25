@@ -2,6 +2,8 @@
 
 #include "Core/IAction.hpp"
 
+#include "Features/Components/UnitProperties.hpp"
+
 namespace sw::features::actions
 {
     template <class DamageType>
@@ -16,12 +18,14 @@ namespace sw::features::actions
             if (!damageParam)
                 return false;
 
+            auto position = world.getPosition(unit);
+
             auto targets = world.findUnits(
-                unit.getPosition(),
+                position,
                 MinRange,
                 MaxRange,
                 [](const sw::core::Unit& target) {
-                    return target.getProperty<MeleeTargetable>();
+                    return target.getProperty<sw::features::units::properties::MeleeTargetable>();
                 });
             if (targets.empty())
                 return false;
