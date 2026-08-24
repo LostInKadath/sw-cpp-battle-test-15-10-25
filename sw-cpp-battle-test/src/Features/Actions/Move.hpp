@@ -17,7 +17,7 @@ namespace sw::features::actions
 
             auto position = world.getPosition(unit);
 
-            for (auto step = 1; step < Speed && position != march->target; ++step)
+            for (auto step = 0; step < Speed && position != march->target; ++step)
             {
                 auto nextPoint = makeStep(position, march->target);
                 if (world.isCellBlocked(nextPoint))
@@ -29,7 +29,6 @@ namespace sw::features::actions
                 
                 world.moveUnit(unit, nextPoint);
                 position = nextPoint;
-                // TODO: log about movement
             }
 
             if (position == march->target)

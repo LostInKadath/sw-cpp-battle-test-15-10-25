@@ -26,10 +26,7 @@ namespace sw::features::actions
 
             auto& target = *targets[0];           // TODO: get random target
 
-            if (auto targetHealth = target.getProperty<units::parameters::Health>())
-                targetHealth->value = std::max(0, targetHealth->value - damageParam->value);
-
-            // Who will log the event? The world?
+            world.applyDamage(unit, target, damageParam->value);
             return true;
         }
 

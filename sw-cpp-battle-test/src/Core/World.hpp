@@ -88,17 +88,41 @@ namespace sw::core
             _observer.onUnitMoved(_currentTick, id, position);
         }
 
+        void startMarch(uint32_t unitId, const Point& to)
+        {
+            auto& unit = _units.at(unitId);
+            unit->setProperty<core::properties::March>(to);
+
+            const auto from =_positions.at(unitId);
+            _observer.onMarchStarted(_currentTick, unitId, from, to);
+        }
+
         void completeMarch(Unit& unit)
         {
             unit.removeProperty<properties::March>();
             _observer.onMarchEnded(_currentTick, unit.getId(), _positions.at(unit.getId()));
         }
 
-    public: // Wrappers to inject _currentTick
-        void startMarch(uint32_t unitId, const Point& to)
+        void applyDamage(Unit& attacker, Unit& target, uint32_t amount)
         {
-            const auto from =_positions.at(unitId);
-            _observer.onMarchStarted(_currentTick, unitId, from, to);
+            uint32_t targetHealth = 0;
+            if (auto health = target.getProperty<properties::IHealth>())
+            {
+                health->changeValue(-amount);
+                targetHealth = health->currentValue();
+            }
+            _observer.onUnitAttacked(_currentTick, attacker.getId(), target.getId(), amount, targetHealth);
+        }
+
+        void healUnit(Unit& healer, Unit& target, uint32_t amount)
+        {
+            uint32_t targetHealth = 0;
+            if (auto health = target.getProperty<properties::IHealth>())
+            {
+                health->changeValue(+amount);
+                targetHealth = health->currentValue();
+            }
+            //_observer.onUnitHealed(_currentTick, healer.getId(), target.getId(), amount, targetHealth);
         }
 
     private:

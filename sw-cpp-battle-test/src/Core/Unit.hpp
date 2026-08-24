@@ -22,15 +22,15 @@ namespace sw::core
             return _id;
         }
 
-        template <typename PropertyType, typename PropertyValueType>
+        template <typename PropertyType, typename... Interfaces, typename PropertyValueType>
         void setProperty(PropertyValueType param)
         {
-            _properties.emplace<PropertyType>(std::move(param));
+            _properties.emplace<PropertyType, Interfaces...>(std::move(param));
         }
-        template <typename PropertyType>
+        template <typename PropertyType, typename... Interfaces>
         void setProperty()
         {
-            _properties.emplace<PropertyType>();
+            _properties.emplace<PropertyType, Interfaces...>();
         }
 
         template <typename PropertyType>

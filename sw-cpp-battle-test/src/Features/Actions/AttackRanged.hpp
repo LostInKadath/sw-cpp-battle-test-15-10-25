@@ -34,11 +34,8 @@ namespace sw::features::actions
                 return false;
 
             auto& target = *targets[0];           // TODO: get random target
-
-            if (auto targetHealth = target.getProperty<units::parameters::Health>())
-                targetHealth->value = std::max(0, targetHealth->value - damageParam->value);
-
-            // TODO: log the attack
+            
+            world.applyDamage(unit, target, damageParam->value);
             return true;
         }
 

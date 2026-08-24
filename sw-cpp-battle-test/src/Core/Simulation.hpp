@@ -34,10 +34,6 @@ namespace sw::core
 
         void marchUnit(uint32_t unitId, uint32_t targetX, uint32_t targetY)
         {
-            auto& unit = _world->getUnit(unitId);
-            unit->setProperty<core::properties::March>(Point{targetX, targetY});
-
-            // Notifying the _observer -- a bit ugly...
             _world->startMarch(unitId, {targetX, targetY});
         }
 
