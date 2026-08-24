@@ -3,6 +3,7 @@
 #include <functional>
 #include <type_traits>
 #include <unordered_map>
+#include <vector>
 
 #include <Core/ISimulationObserver.hpp>
 #include <Core/Point.hpp>
@@ -35,6 +36,7 @@ namespace sw::core
 
             _units.emplace(id, std::move(unit));
             _positions.emplace(id, position);
+            _turnOrder.push_back(id);
 
             _observer.onUnitSpawned(_currentTick, id, type, position);
         }
@@ -125,6 +127,39 @@ namespace sw::core
             //_observer.onUnitHealed(_currentTick, healer.getId(), target.getId(), amount, targetHealth);
         }
 
+    public:
+        bool step(uint32_t tick)
+        {
+            _currentTick = tick;
+
+            bool anyActed = false;
+            for (auto id : _turnOrder)      // Units act in order of creation
+            {
+                auto it = _units.find(id);
+                if (it != _units.end() && it->second->tryAct(*this))
+                    anyActed = true;
+            }
+
+            // Finalize the step, remove dead units
+            for (auto it = _units.begin(); it != _units.end(); )
+            {
+                auto health = it->second->getProperty<properties::IHealth>();
+                if (!health || !health->isDead())
+                {
+                    ++it;
+                    continue;
+                }
+
+                _observer.onUnitDied(_currentTick, it->first);
+
+                _positions.erase(it->first);
+                std::erase(_turnOrder, it->first);
+                it = _units.erase(it);
+            }
+
+            return _units.size() > 1 && anyActed;
+        }
+
     private:
         // Chebyshev distance -- supports diagonal distance.
         static auto getDistance(const Point& a, const Point& b) -> Point::CoordType
@@ -141,6 +176,7 @@ namespace sw::core
 
         std::unordered_map<UnitId, std::unique_ptr<Unit>> _units;
         std::unordered_map<UnitId, Point> _positions;
+        std::vector<UnitId> _turnOrder;
 
         uint32_t _currentTick{ 0 };
     };

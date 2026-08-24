@@ -60,5 +60,7 @@ int main(int argc, char** argv)
 
 	parser.parse(file);
 
+	simulation.run();
+
 	return 0;
 }

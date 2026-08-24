@@ -37,6 +37,13 @@ namespace sw::core
             _world->startMarch(unitId, {targetX, targetY});
         }
 
+        void run()
+        {
+            uint32_t tick = 1;
+            while (_world->step(tick))
+                ++tick;
+        }
+
     private:
         template <typename UnitType, typename... Args>
         void spawnUnit(uint32_t unitId, uint32_t x, uint32_t y, Args&&... args)

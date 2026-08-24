@@ -33,9 +33,9 @@ namespace sw::features::units
 
             auto unit = std::make_unique<Unit>(id, std::move(actions));
 
-            unit->setProperty<sw::features::units::parameters::Health>(health);
-            unit->setProperty<sw::features::units::parameters::Strength>(strength);
-            unit->setProperty<sw::features::units::parameters::Agility>(agility);
+            unit->setProperty<units::parameters::Health, properties::IHealth>(health);
+            unit->setProperty<units::parameters::Strength>(strength);
+            unit->setProperty<units::parameters::Agility>(agility);
 
             return unit;
         }

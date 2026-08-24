@@ -18,7 +18,7 @@ namespace sw::core::properties
     {
         virtual ~IHealth() = default;
         virtual bool isDead() const = 0;
-        virtual uint32_t currentValue() const = 0;
-        virtual void changeValue(uint32_t delta) = 0;
+        virtual int currentValue() const = 0;
+        virtual void changeValue(int delta) = 0;
     };
 }
