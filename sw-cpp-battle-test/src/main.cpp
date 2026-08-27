@@ -18,8 +18,6 @@
 #include <Core/Simulation.hpp>
 #include <Core/SimulationObserver.hpp>
 
-#include <Features/Units/Swordsman.hpp>
-
 #include <fstream>
 #include <iostream>
 #include <optional>

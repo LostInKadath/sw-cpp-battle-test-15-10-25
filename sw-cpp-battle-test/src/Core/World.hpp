@@ -31,6 +31,9 @@ namespace sw::core
             if (_units.contains(id))
                 throw std::runtime_error("Unit with id " + std::to_string(id) + " already exists!");
 
+            if (!isPositionOnMap(position))
+                throw std::runtime_error("Position " + std::to_string(position.x) + ", " + std::to_string(position.y) + " is beyond map limits!");
+
             if (isCellBlocked(position))
                 throw std::runtime_error("Position " + std::to_string(position.x) + ", " + std::to_string(position.y) + " is already occupied!");
 
@@ -53,6 +56,9 @@ namespace sw::core
 
         bool isCellBlocked(const Point& position) const
         {
+            if (!isPositionOnMap(position))
+                throw std::runtime_error("Position " + std::to_string(position.x) + ", " + std::to_string(position.y) + " is beyond map limits!");
+
             constexpr const auto MinRange = 0;
             constexpr const auto MaxRange = 0;
 
@@ -85,6 +91,9 @@ namespace sw::core
 
         void moveUnit(const Unit& unit, const Point& position)
         {
+            if (!isPositionOnMap(position))
+                throw std::runtime_error("Position " + std::to_string(position.x) + ", " + std::to_string(position.y) + " is beyond map limits!");
+
             const auto id = unit.getId();
             _positions.at(id) = position;
             _observer.onUnitMoved(_currentTick, id, position);
@@ -92,6 +101,9 @@ namespace sw::core
 
         void startMarch(uint32_t unitId, const Point& to)
         {
+            if (!isPositionOnMap(to))
+                throw std::runtime_error("Position " + std::to_string(to.x) + ", " + std::to_string(to.y) + " is beyond map limits!");
+
             auto& unit = _units.at(unitId);
             unit->setProperty<core::properties::March>(to);
 
@@ -110,7 +122,7 @@ namespace sw::core
             uint32_t targetHealth = 0;
             if (auto health = target.getProperty<properties::IHealth>())
             {
-                health->changeValue(-amount);
+                health->changeValue(-static_cast<int>(amount));
                 targetHealth = health->currentValue();
             }
             _observer.onUnitAttacked(_currentTick, attacker.getId(), target.getId(), amount, targetHealth);
@@ -121,7 +133,7 @@ namespace sw::core
             uint32_t targetHealth = 0;
             if (auto health = target.getProperty<properties::IHealth>())
             {
-                health->changeValue(+amount);
+                health->changeValue(+static_cast<int>(amount));
                 targetHealth = health->currentValue();
             }
             //_observer.onUnitHealed(_currentTick, healer.getId(), target.getId(), amount, targetHealth);
@@ -167,6 +179,12 @@ namespace sw::core
             const auto dx = a.x > b.x ? a.x - b.x : b.x - a.x;
             const auto dy = a.y > b.y ? a.y - b.y : b.y - a.y;
             return std::max(dx, dy);
+        }
+
+        bool isPositionOnMap(const Point& p) const
+        {
+            return 0 <= p.x && p.x < _width &&
+                   0 <= p.y && p.y < _height;
         }
 
     private:
