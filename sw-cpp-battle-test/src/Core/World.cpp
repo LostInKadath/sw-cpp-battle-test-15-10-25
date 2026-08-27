@@ -4,8 +4,8 @@
 
 using namespace sw::core;
 
-World::World(uint32_t width, uint32_t height, const ISimulationObserver& observer)
-    : _width{ width }, _height{ height }, _observer{ observer }
+World::World(uint32_t width, uint32_t height, const ISimulationObserver& observer, IRandom& random)
+    : _width{ width }, _height{ height }, _observer{ observer }, _random{ random }
 {
     _observer.onMapCreated(_currentTick, _width, _height);
 }
@@ -75,6 +75,14 @@ std::vector<Unit*> World::findUnits(
     }
 
     return targets;
+}
+
+Unit& World::pickRandomTarget(const std::vector<Unit*>& targets)
+{
+    if (targets.empty())
+        throw std::runtime_error("No targets to pick from!");
+
+    return *targets[_random.next(targets.size())];
 }
 
 void World::moveUnit(const Unit& unit, const Point& position)

@@ -24,7 +24,7 @@ namespace sw::features::actions
             if (targets.empty())
                 return false;
 
-            auto& target = *targets[0];           // TODO: get random target
+            auto& target = world.pickRandomTarget(targets);
 
             world.applyDamage(unit, target, damageParam->value);
             return true;
@@ -43,7 +43,7 @@ namespace sw::features::actions
                 if (immunities->types.count(sw::features::units::AttackType::Melee))
                     return false;
             }
-            
+
             return true;
         }
     };

@@ -3,6 +3,7 @@
 #include <optional>
 #include <stdexcept>
 
+#include <Core/Randomizer.hpp>
 #include <Core/World.hpp>
 #include <Features/Units/Hunter.hpp>
 #include <Features/Units/Swordsman.hpp>
@@ -34,6 +35,7 @@ namespace sw::core
 
     private:
         const ISimulationObserver& _observer;
+        Randomizer _random;
         std::optional<World> _world;
     };
 }

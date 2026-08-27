@@ -8,7 +8,7 @@ Simulation::Simulation(ISimulationObserver& observer)
 
 void Simulation::createMap(uint32_t width, uint32_t height)
 {
-    _world.emplace(width, height, _observer);
+    _world.emplace(width, height, _observer, _random);
 }
 
 void Simulation::spawnSwordsman(uint32_t unitId, uint32_t x, uint32_t y, uint32_t health, uint32_t strength)
