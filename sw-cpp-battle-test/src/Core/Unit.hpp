@@ -10,7 +10,7 @@ namespace sw::core
 {
     struct Unit final
     {
-        explicit Unit(uint32_t id, std::vector<std::unique_ptr<IAction>> actions)
+        explicit Unit(uint32_t id, std::vector<std::unique_ptr<IAction>>&& actions)
             : _id{ id },_actions{ std::move(actions) }
         {
         }

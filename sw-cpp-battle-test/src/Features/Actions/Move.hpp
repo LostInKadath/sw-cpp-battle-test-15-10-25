@@ -16,6 +16,7 @@ namespace sw::features::actions
                 return false;
 
             auto position = world.getPosition(unit);
+            bool moved = false;
 
             for (auto step = 0; step < Speed && position != march->target; ++step)
             {
@@ -29,12 +30,15 @@ namespace sw::features::actions
                 
                 world.moveUnit(unit, nextPoint);
                 position = nextPoint;
+                moved = true;
             }
 
             if (position == march->target)
+            {
                 world.completeMarch(unit);
-
-            return true;
+                return true;
+            }
+            return moved;
         }
 
     private:
