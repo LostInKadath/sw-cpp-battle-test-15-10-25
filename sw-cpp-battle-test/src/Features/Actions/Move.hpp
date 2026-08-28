@@ -3,6 +3,8 @@
 #include <Core/IAction.hpp>
 #include <Core/Point.hpp>
 #include <Core/Properties.hpp>
+#include <Core/Unit.hpp>
+#include <Core/World.hpp>
 
 namespace sw::features::actions
 {
@@ -27,7 +29,7 @@ namespace sw::features::actions
                     // We can try to occupy this cell on the next tick.
                     break;
                 }
-                
+
                 world.moveUnit(unit, nextPoint);
                 position = nextPoint;
                 moved = true;

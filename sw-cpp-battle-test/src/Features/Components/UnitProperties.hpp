@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include <Core/Properties.hpp>
+
 namespace sw::features::units
 {
     namespace parameters
@@ -10,14 +12,14 @@ namespace sw::features::units
         {
             int value{ 0 };
             const int maxValue{ 0 };
-            
+
             explicit Health(int value = 0) : value(value), maxValue(value) {}
 
             bool isDead() const override { return value <= 0; }
             int currentValue() const override { return value; }
             void changeValue(int delta) override {  value = std::clamp(value + delta, 0, maxValue); }
         };
-        
+
         struct Strength{ int value{ 0 }; };
         struct Agility{ int value{ 0 }; };
     }

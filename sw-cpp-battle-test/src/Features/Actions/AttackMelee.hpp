@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core/IAction.hpp"
+#include "Core/Unit.hpp"
+#include "Core/World.hpp"
 
 #include "Features/Components/UnitProperties.hpp"
 

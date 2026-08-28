@@ -3,6 +3,9 @@
 #include <functional>
 
 #include "Core/IAction.hpp"
+#include "Core/Point.hpp"
+#include "Core/Unit.hpp"
+#include "Core/World.hpp"
 
 #include "Features/Components/UnitProperties.hpp"
 
